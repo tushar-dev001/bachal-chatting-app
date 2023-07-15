@@ -1,0 +1,55 @@
+/* *{
+    margin: 0;
+    padding: 0;
+} */
+.regImg{
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+}
+
+
+.reg-container{
+    font-family: 'Nunito Sans', sans-serif;
+    width: 60%;
+    margin-left: auto;
+    margin-top: 50%;
+    transform: translateY(-50%);
+}
+
+.reg-para{
+    margin-top: 15px;
+}
+
+.reg-input{
+    margin-top: 35px;
+    /* position: relative; */
+}
+.reg-input .MuiTextField-root{
+    width: 75%;
+}
+
+.signUp-btn{
+    font-family: 'Nunito Sans', sans-serif;
+    background-color: #5F35F5;
+    color: white;
+    width: 75%;
+    padding: 12px;
+    font-size: 20px;
+    font-weight: 600;
+    border-radius: 50px;
+    border: none;
+    margin-top: 35px;
+    cursor: pointer;
+}
+
+.MuiLoadingButton-root{
+    background-color: red;
+    height: 50px;
+    padding-top: 20px;
+}
+
+.eye{
+    /* position: absolute; */
+
+}
