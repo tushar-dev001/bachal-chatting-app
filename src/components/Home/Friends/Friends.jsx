@@ -26,9 +26,11 @@ const Friends = () => {
       }, []);
 
       const handleBlock =(block)=>{
-        userData.uid === block.whoSendId
-        ?
-        set(push(ref(db, 'block')),{
+        console.log(userData.uid == block.whoSendId);
+        console.log(userData.uid == block.whoReceivedId);
+
+        if(userData.uid == block.whoSendId){
+          set(push(ref(db, 'block')),{
             whoBlockReceivedId: block.whoReceivedId,
             whoBlockReceivedName: block.whoReceivedName,
             whoBlockedSendId: block.whoSendId,
@@ -37,8 +39,8 @@ const Friends = () => {
         }).then(()=>{
             remove(ref(db, 'friends' ))
         })
-        :
-        set(push(ref(db, 'block')),{
+        }else{
+          set(push(ref(db, 'block')),{
             whoBlockReceivedId: block.whoSendId, 
             whoBlockReceivedName: block.whoSendName,
             whoBlockedSendId: block.whoReceivedId,
@@ -46,7 +48,12 @@ const Friends = () => {
         }).then(()=>{
             remove(ref(db, 'friends'))
         })
+        }
+      }
 
+      const handleUnfriend = (unfriend)=>{
+        console.log(unfriend);
+        remove(ref(db, 'friends'))
       }
 
 
@@ -76,7 +83,7 @@ const Friends = () => {
                 </div>
                 <div className="button">
                 <Button onClick={()=>handleBlock(friend)} variant="contained" >Block</Button>
-                <div className="btn-btn"><Button variant="contained">Unfriend</Button></div>
+                <div className="btn-btn"><Button onClick={()=>handleUnfriend(friend.id)} variant="contained">Unfriend</Button></div>
                 </div>
             </div>
             </>
