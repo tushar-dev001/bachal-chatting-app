@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Alert, Button } from "@mui/material";
 import "./GroupList.css";
 import g1 from "../../../../public/g1.png";
 import Box from "@mui/material/Box";
@@ -133,7 +133,9 @@ const GroupList = () => {
         </Modal>
       </h3>
 
-      {groupsDetails.map((groupDetails) => (
+      {groupsDetails.length > 0
+      ?
+      groupsDetails.map((groupDetails) => (
         <>
           <div className="list">
             <div className="img">
@@ -150,7 +152,12 @@ const GroupList = () => {
             </div>
           </div>
         </>
-      ))}
+      ))
+      :
+      <Alert style={{ fontSize: "20px" }} severity="info">
+          No Groups Available!
+        </Alert>
+      }
     </div>
     // <>
     //   {/* <div className="box">

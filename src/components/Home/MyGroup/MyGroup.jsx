@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Alert, Button } from "@mui/material";
 import g1 from "../../../../public/g1.png";
 import { useSelector } from "react-redux";
 import { getDatabase, ref, onValue } from "firebase/database";
@@ -29,7 +29,9 @@ const MyGroup = () => {
     <div className="box">
       <h3 className="title">My Group</h3>
 
-      {groupsInfo.map((groupAdmin) => (
+      {groupsInfo.length > 0
+      ?
+      groupsInfo.map((groupAdmin) => (
         <>
           <div className="list">
             <div className="img">
@@ -46,7 +48,12 @@ const MyGroup = () => {
             </div>
           </div>
         </>
-      ))}
+      ))
+      :
+      <Alert style={{ fontSize: "20px" }} severity="info">
+          No Groups Available!
+        </Alert>
+      }
     </div>
   );
 };
