@@ -9,7 +9,7 @@ import {
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Home from "./components/Home/HomeDesign/Home";
-import Messege from './components/Message/Message'
+import Messege from "./components/Message/Message";
 import RootLayOut from "./components/RootLayOut/RootLayOut";
 
 // const router = createBrowserRouter(
@@ -51,7 +51,7 @@ function App() {
   return (
     <>
       <ToastContainer
-        position="bottom-center"
+        position="top-right"
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
@@ -62,6 +62,8 @@ function App() {
         pauseOnHover
         theme="light"
       />
+      {/* Same as */}
+      <ToastContainer />
       <RouterProvider router={router} />
     </>
   );

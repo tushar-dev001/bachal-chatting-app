@@ -1,15 +1,10 @@
 import { useEffect, useState } from "react";
-import {
-  getDatabase,
-  ref,
-  onValue,
-  set,
-  remove,
-} from "firebase/database";
+import { getDatabase, ref, onValue, set, remove } from "firebase/database";
 import { Alert, Button } from "@mui/material";
 import g1 from "../../../public/g1.png";
 import { getAuth } from "firebase/auth";
 import { useSelector } from "react-redux";
+import { toast } from 'react-toastify';
 
 const UserList = () => {
   const db = getDatabase();
@@ -17,6 +12,9 @@ const UserList = () => {
   const [userLists, setUserLists] = useState([]);
   const [friendRequeset, setFriendRequeset] = useState([]);
   const [friends, setFriends] = useState([]);
+  const [block, setBlock] = useState([]);
+
+  const notify  = toast();
   // console.log(userLists);
   const userData = useSelector((state) => state.loggedUser.loginUser);
 
@@ -61,6 +59,18 @@ const UserList = () => {
     });
   }, []);
 
+  //firebase theke block ke niye asa hoicne button er likha ta block korar jonno.
+  useEffect(() => {
+    const blockRef = ref(db, "block/");
+    onValue(blockRef, (snapshot) => {
+      let arr = [];
+      snapshot.forEach((item) => {
+        arr.push(item.val().whoBlockReceivedId + item.val().whoBlockedSendId);
+      });
+      setBlock(arr);
+    });
+  }, []);
+
   //kon user er profile kon user er friend request jacche seyta set korteche.
   const handleFriendRequest = (friendRequest) => {
     // console.log("kake pathaiche", friendRequest.id);
@@ -72,14 +82,17 @@ const UserList = () => {
       whoSendName: auth.currentUser.displayName,
       whoReceivedId: friendRequest.id,
       whoReceivedName: friendRequest.username,
-    });
+    }).then(()=>{
+      toast("Friend Request Successfully!")
+    })
   };
 
   //friend request cancle korteche.
   const handleCancle = (cancleRequest) => {
     console.log(cancleRequest.id);
+    toast("Cancel Friend Request")
     remove(ref(db, "friendrequest/" + cancleRequest.id));
-  };
+  }
 
   return (
     <div className="box">
@@ -103,6 +116,7 @@ const UserList = () => {
                     <Button
                       onClick={() => handleCancle(user)}
                       variant="contained"
+                      color="secondary"
                       className="btn"
                     >
                       Cancle
@@ -110,19 +124,25 @@ const UserList = () => {
                   ) : friendRequeset.includes(
                       auth.currentUser.uid + user.id
                     ) ? (
-                    <Button variant="contained" className="btn">
+                    <Button color="secondary" variant="contained" className="btn">
                       Panding
                     </Button>
-                  
-                  ) : friends.includes(user.id + auth.currentUser.uid) || friends.includes(auth.currentUser.uid + user.id)
-                  ?
-                  <Button
-                      variant="contained"
-                      className="btn"
-                    >
+                  ) : friends.includes(user.id + auth.currentUser.uid) ||
+                    friends.includes(auth.currentUser.uid + user.id) ? (
+                    <Button variant="contained" color="success" className="btn">
                       Friend
                     </Button>
-                  : (
+                  ) : block.includes(user.id + auth.currentUser.uid) ||
+                    block.includes(auth.currentUser.uid + user.id) ? (
+                    <Button
+                      onClick={() => handleFriendRequest(user)}
+                      variant="contained"
+                      color="error"
+                      className="btn"
+                    >
+                      Block
+                    </Button>
+                  ) : (
                     <Button
                       onClick={() => handleFriendRequest(user)}
                       variant="contained"

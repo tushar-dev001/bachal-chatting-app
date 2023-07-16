@@ -1,73 +1,52 @@
 import { Button } from "@mui/material";
-import g1 from '../../../../public/g1.png'
+import g1 from "../../../../public/g1.png";
+import { useSelector } from "react-redux";
+import { getDatabase, ref, onValue } from "firebase/database";
+import { useEffect, useState } from "react";
 
 const MyGroup = () => {
-  return (
-    <div className='box'>
-        <h3 className='title'>
-            My Group
-        </h3>
+  const [groupsInfo, setGroupsInfo] = useState([]);
+  const db = getDatabase();
 
-        <div className="list">
+  const userData = useSelector((state) => state.loggedUser.loginUser);
+
+  useEffect(() => {
+    const groupsRef = ref(db, "groups/");
+    onValue(groupsRef, (snapshot) => {
+      let arr = [];
+      snapshot.forEach((item) => {
+        // console.log(item.val());
+        if (userData.uid == item.val().groupAdminId) {
+          arr.push({ ...item.val(), id: item.key });
+        }
+      });
+      setGroupsInfo(arr);
+      console.log(groupsInfo);
+    });
+  }, []);
+
+  return (
+    <div className="box">
+      <h3 className="title">My Group</h3>
+
+      {groupsInfo.map((groupAdmin) => (
+        <>
+          <div className="list">
             <div className="img">
-                <img src={g1} alt="" />
+              <img src={g1} alt="" />
             </div>
             <div className="details">
-                <h4 className='group-name'>Friends Reunion</h4>
-                <p className='group-title'>Hi Guys, Wassup!</p>
+              <h4 className="group-name">{groupAdmin.groupInfoName}</h4>
+              <p className="group-title">{groupAdmin.groupInfoTagline}</p>
             </div>
             <div className="button">
-            <Button variant="contained" className='btn'>Join</Button>
+              <Button variant="contained" className="btn">
+                Info
+              </Button>
             </div>
-        </div>
-        <div className="list">
-            <div className="img">
-                <img src={g1} alt="" />
-            </div>
-            <div className="details">
-                <h4 className='group-name'>Friends Reunion</h4>
-                <p className='group-title'>Hi Guys, Wassup!</p>
-            </div>
-            <div className="button">
-            <Button variant="contained" className='btn'>Join</Button>
-            </div>
-        </div>
-        <div className="list">
-            <div className="img">
-                <img src={g1} alt="" />
-            </div>
-            <div className="details">
-                <h4 className='group-name'>Friends Reunion</h4>
-                <p className='group-title'>Hi Guys, Wassup!</p>
-            </div>
-            <div className="button">
-            <Button variant="contained" className='btn'>Join</Button>
-            </div>
-        </div>
-        <div className="list">
-            <div className="img">
-                <img src={g1} alt="" />
-            </div>
-            <div className="details">
-                <h4 className='group-name'>Friends Reunion</h4>
-                <p className='group-title'>Hi Guys, Wassup!</p>
-            </div>
-            <div className="button">
-            <Button variant="contained" className='btn'>Join</Button>
-            </div>
-        </div>
-        <div className="list">
-            <div className="img">
-                <img src={g1} alt="" />
-            </div>
-            <div className="details">
-                <h4 className='group-name'>Friends Reunion</h4>
-                <p className='group-title'>Hi Guys, Wassup!</p>
-            </div>
-            <div className="button">
-            <Button variant="contained" className='btn'>Join</Button>
-            </div>
-        </div>
+          </div>
+        </>
+      ))}
     </div>
   );
 };

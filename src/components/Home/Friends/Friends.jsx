@@ -4,10 +4,12 @@ import g1 from '../../../../public/g1.png'
 import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { toast } from 'react-toastify';
 
 const Friends = () => {
     const [friends, setFriends] = useState([])
     const db = getDatabase()
+    const notify  = toast();
 
     const userData = useSelector((state) => state.loggedUser.loginUser);
 
@@ -26,8 +28,8 @@ const Friends = () => {
       }, []);
 
       const handleBlock =(block)=>{
-        console.log(userData.uid == block.whoSendId);
-        console.log(userData.uid == block.whoReceivedId);
+        // console.log(userData.uid == block.whoSendId);
+        // console.log(userData.uid == block.whoReceivedId);
 
         if(userData.uid == block.whoSendId){
           set(push(ref(db, 'block')),{
@@ -37,6 +39,7 @@ const Friends = () => {
             whoBlockedSendName: block.whoSendName,
 
         }).then(()=>{
+          toast("This User is Blocked!")
             remove(ref(db, 'friends' ))
         })
         }else{
@@ -46,6 +49,7 @@ const Friends = () => {
             whoBlockedSendId: block.whoReceivedId,
             whoBlockedSendName:block.whoReceivedName, 
         }).then(()=>{
+          toast("This User is Blocked!")
             remove(ref(db, 'friends'))
         })
         }
@@ -53,6 +57,7 @@ const Friends = () => {
 
       const handleUnfriend = (unfriend)=>{
         console.log(unfriend);
+        toast("This User is Unfriend!")
         remove(ref(db, 'friends'))
       }
 
@@ -83,7 +88,7 @@ const Friends = () => {
                 </div>
                 <div className="button">
                 <Button onClick={()=>handleBlock(friend)} variant="contained" >Block</Button>
-                <div className="btn-btn"><Button onClick={()=>handleUnfriend(friend.id)} variant="contained">Unfriend</Button></div>
+                <div className="btn-btn"><Button color="secondary" onClick={()=>handleUnfriend(friend.id)} variant="contained">Unfriend</Button></div>
                 </div>
             </div>
             </>

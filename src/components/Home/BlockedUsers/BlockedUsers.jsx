@@ -1,12 +1,14 @@
-import { Button } from "@mui/material";
+import { Alert, Button } from "@mui/material";
 import g1 from '../../../../public/g1.png'
-import { getDatabase, onValue, ref } from "firebase/database";
+import { getDatabase, onValue, ref, remove } from "firebase/database";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { toast } from 'react-toastify';
 
 const BlockedUsers = () => {
     const db = getDatabase()
     const [blockUsers, setBlockUsers] = useState([])
+    const notify  = toast();
     const userData = useSelector((state) => state.loggedUser.loginUser);
 
     useEffect(()=>{
@@ -14,27 +16,17 @@ const BlockedUsers = () => {
         onValue(blockRef, (snapshot)=>{
             const arr = [];
             snapshot.forEach((item)=>{
-                console.log(item);
-                if(userData.uid == item.val().whoBlockedSendId){
-
-                    arr.push({
-                        id: item.key,
-                        whoBlockReceivedName: item.val().whoBlockReceivedName,
-                        whoBlockReceivedId: item.val().whoBlockReceivedId,
-                    })
-                }else{
-                    arr.push({
-                        id: item.key,
-                        whoBlockSendName: item.val().whoBlockSendName,
-                        whoBlockSendId: item.val().whoBlockSendId
-
-                    })
-                }
+                arr.push({...item.val(), id: item.key})
+               
             })
             setBlockUsers(arr)
-            console.log(blockUsers);
         })
     },[])
+
+    const handleUnblock =(Unblock)=>{
+        toast("This User is Unblocked!")
+        remove(ref(db, 'block'))
+    }
 
 
   return (
@@ -43,24 +35,38 @@ const BlockedUsers = () => {
             Block User
         </h3>
 
-        {blockUsers.map((user)=>(
+        {blockUsers.length > 0 
+        ?
+        blockUsers.map((user)=>(
 
-        <>
-            <div className="list">
-            <div className="img">
-                <img src={g1} alt="" />
+            <>
+                <div className="list">
+                <div className="img">
+                    <img src={g1} alt="" />
+                </div>
+                <div className="details">
+                    {user.whoBlockedSendId == userData.uid
+                    ?
+                    <h4 className='group-name'>{user.whoBlockReceivedName}</h4>
+                    :
+                    <h4 className='group-name'>{user.whoBlockedSendName}</h4>
+                    }
+                    <p className='group-title'>Hi Guys, Wassup!</p>
+                </div>
+                <div className="button">
+                    {user.whoBlockedSendId == userData.uid &&
+                    <Button onClick={()=>handleUnblock(user.id)} variant="contained" color="success" className='btn'>Unblock</Button>
+                    }
+                </div>
             </div>
-            <div className="details">
-                <h4 className='group-name'>{user.whoBlockReceivedName}</h4>
-                <h4 className='group-name'>{user.whoBlockSendName}</h4>
-                <p className='group-title'>Hi Guys, Wassup!</p>
-            </div>
-            <div className="button">
-            <Button variant="contained" className='btn'>Join</Button>
-            </div>
-        </div>
-        </>
-        ))}
+            </>
+            ))
+        :
+        <Alert style={{ fontSize: "20px" }} severity="info">
+          No Block User Available!
+        </Alert>
+        }
+        
     </div>
   );
 };

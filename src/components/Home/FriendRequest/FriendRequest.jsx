@@ -4,10 +4,12 @@ import g1 from "../../../../public/g1.png";
 import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { toast } from 'react-toastify';
 
 const FriendRequest = () => {
   const [friendRequestList, setFriendRequestList] = useState([]);
   const db = getDatabase();
+  const notify  = toast();
 
   const userData = useSelector((state) => state.loggedUser.loginUser);
 
@@ -24,13 +26,13 @@ const FriendRequest = () => {
         }
       });
       setFriendRequestList(arr);
-      console.log(friendRequestList);
     });
   }, []);
 
   //friend request reject part
   const handleReject =(reject)=>{
     console.log(reject);
+    toast("Friend Request Rejected!")
     remove(ref(db, "friendrequest/" + reject));
   }
 
@@ -41,6 +43,7 @@ const FriendRequest = () => {
         ...accept,
     })
     .then(()=>{
+      toast("Friend Request Accepted!")
         remove(ref(db, "friendrequest/" + accept.id));
     })
   }
@@ -67,6 +70,7 @@ const FriendRequest = () => {
                 <Button
                   style={{ marginLeft: "12px" }}
                   variant="contained"
+                  color="error"
                   className="btn"
                   onClick={()=>handleReject(friendRequest.id)}
                 >

@@ -1,6 +1,6 @@
 import "./RootLayOut.css";
 import Grid from "@mui/material/Unstable_Grid2";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import profile from "../../../public/profile.png";
 import {
   AiFillHome,
@@ -10,12 +10,40 @@ import {
   AiOutlineLogin,
 } from "react-icons/ai";
 import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { getAuth, signOut } from "firebase/auth";
+import { toast } from 'react-toastify';
 
 const RootLayOut = () => {
   const location = useLocation();
   console.log(location.pathname);
+  const navigate = useNavigate();
+  const auth = getAuth();
+  const notify  = toast();
 
   const userData = useSelector(state => state.loggedUser.loginUser)
+
+  const handleLogout = () => {
+    if (userData !== null) {
+      signOut(auth)
+        .then(() => {
+          console.log("Logout successful");
+          localStorage.removeItem("user");
+          toast("Logout successfully!")
+          navigate("/login");
+        })
+        .catch((error) => console.log(error));
+      console.log(auth);
+    }
+  };
+
+  useEffect(() => {
+    if (userData === null) {
+      navigate("/login");
+    } else {
+      navigate("/home");
+    }
+  }, []);
 
   return (
     <div>
@@ -50,7 +78,7 @@ const RootLayOut = () => {
                   
                 </li>
                 <li>
-                <Link className="icon" >
+                <Link onClick={handleLogout} className="icon" >
                     <AiOutlineLogin/>
                   </Link>
                   

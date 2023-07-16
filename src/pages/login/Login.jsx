@@ -51,7 +51,7 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const notify  = () => toast();
+  const notify  = toast();
 
   const [values, setValues] = useState(initialValue);
   const [loader, setLoader] = useState();
@@ -83,6 +83,7 @@ const Login = () => {
         }else{
           dispatch(userData(user.user))
           localStorage.setItem('user', JSON.stringify(user.user))
+          toast("Login successfully!")
           setTimeout(()=>{
             navigate("/home");
           },3000)
