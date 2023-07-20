@@ -81,16 +81,24 @@ const Registration = () => {
         photoURL:
           "https://i.ibb.co/JtFj2cC/Windows-10-Default-Profile-Picture-svg.png",
       }).then(() => {
-        sendEmailVerification(auth.currentUser)
-        .then(() => {
 
-          set(ref(db, 'users/' + user.user.uid),{
-            username: values.fullName,
-            email: values.email,
-            profile_picture: user.user.photoURL
-          })
-        });
+        set(ref(db, 'users/' + user.user.uid),{
+          username: values.fullName,
+          email: values.email,
+          profile_picture: user.user.photoURL
+        })
       });
+      // .then(() => {
+      //   sendEmailVerification(auth.currentUser)
+      //   .then(() => {
+
+      //     set(ref(db, 'users/' + user.user.uid),{
+      //       username: values.fullName,
+      //       email: values.email,
+      //       profile_picture: user.user.photoURL
+      //     })
+      //   });
+      // }
 
       setValues({
         ...values,

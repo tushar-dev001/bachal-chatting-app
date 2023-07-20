@@ -89,7 +89,7 @@ const UserList = () => {
 
   //friend request cancle korteche.
   const handleCancle = (cancleRequest) => {
-    console.log(cancleRequest.id);
+    console.log(cancleRequest);
     toast("Cancel Friend Request")
     remove(ref(db, "friendrequest/" + cancleRequest.id));
   }
@@ -135,7 +135,6 @@ const UserList = () => {
                   ) : block.includes(user.id + auth.currentUser.uid) ||
                     block.includes(auth.currentUser.uid + user.id) ? (
                     <Button
-                      onClick={() => handleFriendRequest(user)}
                       variant="contained"
                       color="error"
                       className="btn"
