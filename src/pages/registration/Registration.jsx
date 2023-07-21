@@ -80,25 +80,19 @@ const Registration = () => {
         displayName: values.fullName,
         photoURL:
           "https://i.ibb.co/JtFj2cC/Windows-10-Default-Profile-Picture-svg.png",
-      }).then(() => {
+      })
+      .then(() => {
+        sendEmailVerification(auth.currentUser)
+        .then(() => {
 
-        set(ref(db, 'users/' + user.user.uid),{
-          username: values.fullName,
-          email: values.email,
-          profile_picture: user.user.photoURL
-        })
-      });
-      // .then(() => {
-      //   sendEmailVerification(auth.currentUser)
-      //   .then(() => {
-
-      //     set(ref(db, 'users/' + user.user.uid),{
-      //       username: values.fullName,
-      //       email: values.email,
-      //       profile_picture: user.user.photoURL
-      //     })
-      //   });
-      // }
+          set(ref(db, 'users/' + user.user.uid),{
+            username: values.fullName,
+            email: values.email,
+            profile_picture: user.user.photoURL
+          })
+        });
+      }
+      );
 
       setValues({
         ...values,
@@ -135,6 +129,7 @@ const Registration = () => {
                 type="email"
                 onChange={handleValues}
                 name="email"
+                value={values.email}
               />
             </div>
 
@@ -149,6 +144,7 @@ const Registration = () => {
                 type="text"
                 onChange={handleValues}
                 name="fullName"
+                value={values.fullName}
               />
             </div>
             <div className="reg-input">
@@ -162,6 +158,7 @@ const Registration = () => {
                 type={values.eye ? "text" : "password"}
                 onChange={handleValues}
                 name="password"
+                value={values.password}
               />
 
               <div

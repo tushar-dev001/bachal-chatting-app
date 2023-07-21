@@ -78,16 +78,23 @@ const Login = () => {
         //   password: "",
         // });
         setLoader(false);
-        if(!user.user.emailVerified){
-          toast ("Please Verify Email For Login")
-        }else{
-          dispatch(userData(user.user))
+        // if(!user.user.emailVerified){
+        //   toast ("Please Verify Email For Login")
+        // }else{
+        //   dispatch(userData(user.user))
+        //   localStorage.setItem('user', JSON.stringify(user.user))
+        //   toast("Login successfully!")
+        //   setTimeout(()=>{
+        //     navigate("/home");
+        //   },3000)
+        // }
+
+        dispatch(userData(user.user))
           localStorage.setItem('user', JSON.stringify(user.user))
           toast("Login successfully!")
           setTimeout(()=>{
             navigate("/home");
           },3000)
-        }
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -112,6 +119,15 @@ const Login = () => {
         }
       });
     setLoader(false);
+
+    setTimeout(()=>{
+      setValues({
+        ...values,
+        email: "",
+        password: "",
+        error: "false",
+      });
+    }, 2000)
   };
 
   const handleGoogleLogin = () => {

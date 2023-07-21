@@ -4,7 +4,7 @@ import { Alert, Button } from "@mui/material";
 import g1 from "../../../public/g1.png";
 import { getAuth } from "firebase/auth";
 import { useSelector } from "react-redux";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const UserList = () => {
   const db = getDatabase();
@@ -14,7 +14,7 @@ const UserList = () => {
   const [friends, setFriends] = useState([]);
   const [block, setBlock] = useState([]);
 
-  const notify  = toast();
+  const notify = toast();
   // console.log(userLists);
   const userData = useSelector((state) => state.loggedUser.loginUser);
 
@@ -82,17 +82,17 @@ const UserList = () => {
       whoSendName: auth.currentUser.displayName,
       whoReceivedId: friendRequest.id,
       whoReceivedName: friendRequest.username,
-    }).then(()=>{
-      toast("Friend Request Successfully!")
-    })
+    }).then(() => {
+      toast("Friend Request Successfully!");
+    });
   };
 
   //friend request cancle korteche.
   const handleCancle = (cancleRequest) => {
     console.log(cancleRequest);
-    toast("Cancel Friend Request")
+    toast("Cancel Friend Request");
     remove(ref(db, "friendrequest/" + cancleRequest.id));
-  }
+  };
 
   return (
     <div className="box">
@@ -124,7 +124,11 @@ const UserList = () => {
                   ) : friendRequeset.includes(
                       auth.currentUser.uid + user.id
                     ) ? (
-                    <Button color="secondary" variant="contained" className="btn">
+                    <Button
+                      color="secondary"
+                      variant="contained"
+                      className="btn"
+                    >
                       Panding
                     </Button>
                   ) : friends.includes(user.id + auth.currentUser.uid) ||
@@ -134,11 +138,7 @@ const UserList = () => {
                     </Button>
                   ) : block.includes(user.id + auth.currentUser.uid) ||
                     block.includes(auth.currentUser.uid + user.id) ? (
-                    <Button
-                      variant="contained"
-                      color="error"
-                      className="btn"
-                    >
+                    <Button variant="contained" color="error" className="btn">
                       Block
                     </Button>
                   ) : (
