@@ -1,7 +1,7 @@
 import { Alert, Button } from "@mui/material";
 import g1 from "../../../../public/g1.png";
 import { useSelector } from "react-redux";
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref, onValue, remove } from "firebase/database";
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -27,13 +27,31 @@ const style = {
 };
 
 const MyGroup = () => {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
   const [groupsInfo, setGroupsInfo] = useState([]);
+  const [groupRequestList, setGroupRequestList] = useState([]);
   const db = getDatabase();
 
   const userData = useSelector((state) => state.loggedUser.loginUser);
+  const [open, setOpen] = useState(false);
+  const handleClose = () => setOpen(false);
+  const handleOpen = (group) => {
+    const groupsRef = ref(db, "groupRequest");
+    onValue(groupsRef, (snapshot) => {
+      let arr = [];
+      snapshot.forEach((item) => {
+        console.log(item.val());
+        if (
+          userData.uid === item.val().adminId &&
+          item.val().groupId === group.groupId
+        ) {
+          arr.push({ ...item.val(), groupReqId: item.key });
+        }
+      });
+      setGroupRequestList(arr);
+    });
+
+    setOpen(true);
+  };
 
   useEffect(() => {
     const groupsRef = ref(db, "groups/");
@@ -42,13 +60,16 @@ const MyGroup = () => {
       snapshot.forEach((item) => {
         // console.log(item.val());
         if (userData.uid == item.val().groupAdminId) {
-          arr.push({ ...item.val(), id: item.key });
+          arr.push({ ...item.val(), groupId: item.key });
         }
       });
       setGroupsInfo(arr);
-      console.log(groupsInfo);
     });
   }, []);
+
+  const handleGroupDelete =(deleteGroup)=>{
+    remove(ref(db, 'groupRequest/' + deleteGroup.groupReqId))
+  }
 
   return (
     <div className="box">
@@ -62,17 +83,23 @@ const MyGroup = () => {
                 <img src={g1} alt="" />
               </div>
               <div className="details">
-                <p style={{fontSize:'14px'}}> Admin:{groupAdmin.groupAdminName}</p>
+                <p style={{ fontSize: "14px" }}>
+                  {" "}
+                  Admin:{groupAdmin.groupAdminName}
+                </p>
                 <h4 className="group-name">{groupAdmin.groupInfoName}</h4>
                 <p className="group-title">{groupAdmin.groupInfoTagline}</p>
               </div>
               <div className="button">
                 <Button
-                  onClick={handleOpen}
+                  onClick={() => handleOpen(groupAdmin)}
                   variant="contained"
                   className="btn"
                 >
-                  Info
+                  Request
+                </Button>
+                <Button variant="contained" color="success" className="btn">
+                  Members
                 </Button>
                 {/* Modal start */}
                 <Modal
@@ -98,32 +125,47 @@ const MyGroup = () => {
                           bgcolor: "background.paper",
                         }}
                       >
-                        <ListItem alignItems="flex-start">
-                          <ListItemAvatar>
-                            <Avatar
-                              alt="Remy Sharp"
-                              src="/static/images/avatar/1.jpg"
-                            />
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary="Brunch this weekend?"
-                            secondary={
-                              <>
-                                <Typography
-                                  sx={{ display: "inline" }}
-                                  component="span"
-                                  variant="body2"
-                                  color="text.primary"
-                                >
-                                  Ali Connors
-                                </Typography>
-                                {
-                                  " — I'll be in your neighborhood doing errands this…"
+                        {groupRequestList.map((groupReqInfo) => (
+                          <>
+                            <ListItem alignItems="flex-start">
+                              <ListItemAvatar>
+                                <Avatar
+                                  alt="Remy Sharp"
+                                  src="/static/images/avatar/1.jpg"
+                                />
+                              </ListItemAvatar>
+                              <ListItemText
+                                primary={groupReqInfo.userName}
+                                secondary={
+                                  <>
+                                    <Typography
+                                      sx={{ display: "inline" }}
+                                      component="span"
+                                      variant="body2"
+                                      color="text.primary"
+                                    ></Typography>
+                                    {" — Want's to join your group"}
+                                  </>
                                 }
-                              </>
-                            }
-                          />
-                        </ListItem>
+                              />
+                              <Button
+                                variant="contained"
+                                color="success"
+                                className="btn"
+                              >
+                                Accept
+                              </Button>
+                              <Button onClick={()=>handleGroupDelete(groupReqInfo)}
+                                variant="contained"
+                                color="error"
+                                className="btn"
+                              >
+                                Delete
+                              </Button>
+                            </ListItem>
+                          </>
+                        ))}
+
                         <Divider variant="inset" component="li" />
                       </List>
                       {/* List items end */}
