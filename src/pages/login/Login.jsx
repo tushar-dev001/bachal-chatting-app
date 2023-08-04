@@ -12,7 +12,7 @@ import Heading from "../../components/Shared/Heading/Heading";
 import loginImg from "../../../public/loginImg.png";
 import google from "../../../public/google.png";
 import { toast } from 'react-toastify';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -66,9 +66,11 @@ const Login = () => {
     });
   };
 
+
   const handleLogin = () => {
     const { email, password } = values;
     setLoader(true);
+    
 
     signInWithEmailAndPassword(auth, email, password)
       .then((user) => {
@@ -130,6 +132,13 @@ const Login = () => {
     }, 2000)
   };
 
+  // useEffect(()=>{
+  //   if(userData !== null){
+  //     navigate('/home')
+  //   }
+  // }, [])
+  
+
   const handleGoogleLogin = () => {
     signInWithPopup(auth, provider).then((result) => {
       navigate('/home')
@@ -147,6 +156,8 @@ const Login = () => {
         const errorMessage = error.message;
       });
   };
+
+  
 
   return (
     <>

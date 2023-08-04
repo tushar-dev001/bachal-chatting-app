@@ -37,6 +37,13 @@ const RootLayOut = () => {
     }
   };
 
+  // useEffect(()=>{
+  //   if(userData == null){
+  //     navigate('/login')
+  //     return
+  //   }
+  // })
+
   useEffect(() => {
     if (userData === null) {
       navigate("/login");
@@ -44,6 +51,10 @@ const RootLayOut = () => {
       navigate("/home");
     }
   }, []);
+
+  if(userData == null){
+    return
+  }
 
   return (
     <div>

@@ -9,7 +9,7 @@ import TextField from "@mui/material/TextField";
 import { getDatabase, onValue, push, ref, set } from "firebase/database";
 import { useSelector } from "react-redux";
 import CircularProgress from "@mui/material/CircularProgress";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const style = {
   position: "absolute",
@@ -31,12 +31,13 @@ const groupData = {
 const GroupList = () => {
   const [groupInfo, setGroupInfo] = useState(groupData);
   const [groupsDetails, setGroupsDetails] = useState([]);
+  const [groupMemberList, setGroupMemberList] = useState([]);
   const [loader, setLoader] = useState(false);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const db = getDatabase();
-  const notify  = toast();
+  const notify = toast();
 
   const userData = useSelector((state) => state.loggedUser.loginUser);
 
@@ -55,7 +56,7 @@ const GroupList = () => {
       groupAdminName: userData.displayName,
       groupAdminId: userData.uid,
     }).then(() => {
-        toast("New Group Create!")
+      toast("New Group Create!");
       setLoader(false);
       setOpen(false);
     });
@@ -72,12 +73,36 @@ const GroupList = () => {
     onValue(groupsRef, (snapshot) => {
       let arr = [];
       snapshot.forEach((item) => {
-        console.log(item.val());
         if (userData.uid !== item.val().groupAdminId) {
-          arr.push({ ...item.val(), id: item.key });
+          arr.push({ ...item.val(), groupId: item.key });
         }
       });
       setGroupsDetails(arr);
+    });
+  }, []);
+
+  const handleGroupRequest = (groupRequest) => {
+    console.log(groupRequest);
+    set(push(ref(db, "groupRequest/")), {
+      adminId: groupRequest.groupAdminId,
+      adminName: groupRequest.groupAdminName,
+      groupId: groupRequest.groupId,
+      groupName: groupRequest.groupInfoName,
+      userId: userData.uid,
+      userName: userData.displayName,
+    });
+  };
+
+  useEffect(() => {
+    const groupsRef = ref(db, "groupRequest");
+    onValue(groupsRef, (snapshot) => {
+      let arr = [];
+      snapshot.forEach((item) => {
+        if (item.val().userId === userData.uid) {
+          arr.push(item.val().groupId);
+        }
+      });
+      setGroupMemberList(arr);
     });
   }, []);
 
@@ -124,7 +149,11 @@ const GroupList = () => {
                   <CircularProgress />
                 </Box>
               ) : (
-                <Button  onClick={handleGroupSubmit} variant="contained" color="secondary">
+                <Button
+                  onClick={handleGroupSubmit}
+                  variant="contained"
+                  color="secondary"
+                >
                   Create
                 </Button>
               )}
@@ -133,31 +162,45 @@ const GroupList = () => {
         </Modal>
       </h3>
 
-      {groupsDetails.length > 0
-      ?
-      groupsDetails.map((groupDetails) => (
-        <>
-          <div className="list">
-            <div className="img">
-              <img src={g1} alt="" />
+      {groupsDetails.length > 0 ? (
+        groupsDetails.map((groupDetails) => (
+          <>
+            <div className="list">
+              <div className="img">
+                <img src={g1} alt="" />
+              </div>
+              <div className="details">
+                <p style={{ fontSize: "14px" }}>
+                  {" "}
+                  Admin:{groupDetails.groupAdminName}
+                </p>
+
+                <h4 className="group-name">{groupDetails.groupInfoName}</h4>
+                <p className="group-title">{groupDetails.groupInfoTagline}</p>
+              </div>
+              <div className="button">
+                {groupMemberList.indexOf(groupDetails.groupId) !== -1 ? (
+                  <Button variant="contained" className="btn">
+                    Panding
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handleGroupRequest(groupDetails)}
+                    variant="contained"
+                    className="btn"
+                  >
+                    Join
+                  </Button>
+                )}
+              </div>
             </div>
-            <div className="details">
-              <h4 className="group-name">{groupDetails.groupInfoName}</h4>
-              <p className="group-title">{groupDetails.groupInfoTagline}</p>
-            </div>
-            <div className="button">
-              <Button variant="contained" className="btn">
-                Join
-              </Button>
-            </div>
-          </div>
-        </>
-      ))
-      :
-      <Alert style={{ fontSize: "20px" }} severity="info">
+          </>
+        ))
+      ) : (
+        <Alert style={{ fontSize: "20px" }} severity="info">
           No Groups Available!
         </Alert>
-      }
+      )}
     </div>
     // <>
     //   {/* <div className="box">

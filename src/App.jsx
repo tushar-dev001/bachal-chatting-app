@@ -2,9 +2,7 @@ import Registration from "./pages/registration/Registration";
 import Login from "./pages/login/Login";
 import {
   createBrowserRouter,
-  RouterProvider,
-  createRoutesFromElements,
-  Route,
+  RouterProvider
 } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
